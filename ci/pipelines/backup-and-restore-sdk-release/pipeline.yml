@@ -772,16 +772,12 @@ jobs:
       status: success
   - load_var: pr-url
     file: backup-and-restore-sdk-release/.git/resource/url
-  - task: merge-pr
-    file: cryogenics-concourse-tasks/github-automation/merge-pr/task.yml
+  - task: mark-passing-all-tests
+    file: cryogenics-tasks/tasks/mark-passing-all-tests/task.yml
     input_mapping:
-      source-repo: backup-and-restore-sdk-release
+      repository: backup-and-restore-sdk-release
     params:
-      DELETE: TRUE
-      AUTHOR: dependabot
       GH_TOKEN: ((github.access_token))
-      PR_REF: ((.:pr-url))
-      PROJECT_NAME: BBR-SDK
     on_failure:
       put: slack-cryo-notification
       params:
