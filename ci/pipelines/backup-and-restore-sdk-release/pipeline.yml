@@ -127,6 +127,11 @@ resource_types:
   source:
     repository: dpb587/dynamic-metalink-resource
 
+- name: github-status
+  type: docker-image
+  source:
+    repository: resource/github-status
+
 resources:
 - name: rds-ca-bundle
   type: file-url
@@ -255,6 +260,12 @@ resources:
   type: time
   source:
     days: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ]
+
+- name: commit-status
+  type: github-status
+  source:
+    repo: cloudfoundry-incubator/backup-and-restore-sdk-release
+    access_token: ((github.access_token))
 
 jobs:
 - name: set-pipeline
