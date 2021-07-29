@@ -1,0 +1,71 @@
+---
+resource_types:
+- name: pr-queue
+  type: docker-image
+  source:
+    repository: cryogenics/pr-queue-resource
+
+resources:
+- name: every-5-min
+  type: time
+  source: {interval: 5m}
+
+- name: current-pr
+  type: pr-queue
+  source:
+    repository: some-org/some-repo
+    access_token: ((github.access_token))
+
+- name: some-repo
+  type: git
+  source:
+    uri: git@github.com:some-org/some-repo.git
+    private_key: ((github.ssh_key))
+
+- name: cryogenics-tasks
+  type: git
+  source:
+    uri: git@github.com:pivotal/cryogenics-concourse-tasks.git
+    private_key: ((github.ssh_key))
+
+jobs:
+- name: test-open-pr
+  plan:
+  - get: some-repo
+  - get: current-pr
+    trigger: true
+
+  - try:
+    # When the last open PR is closed/merged, a new "empty" version is generated
+    # To handle this try to read info.json. Only if it succeeds, continue exec.
+      load_var: pr-info
+      file: current-pr/info.json
+      on_success:
+        set_pipeline: some-repo-testing-pr
+        file: some-repo/ci/testing/pipeline.yml
+        vars:
+          branch: ((.:pr-info.branch))
+          # Add any other variables required by your testing pipeline
+
+- name: merge-pr
+  plan:
+  - get: some-repo
+  - get: current-pr
+  - get: every-5-min
+    trigger: true
+
+  - try:
+    # When the last open PR is closed/merged, a new "empty" version is generated
+    # To handle this try to read info.json. Only if it succeeds, continue exec.
+      load_var: pr-info
+      file: current-pr/info.json
+      on_success:
+        task: merge-pr
+        file: cryogenics-tasks/tasks/automerge/task.yml
+        params:
+          GH_TOKEN: ((github.access_token))
+          PR: ((.:pr-info.number))
+          REPO: ((.:pr-info.owner))/((.:pr-info.repository))
+          CHECKS:
+            - some-job
+            - some-other-job
