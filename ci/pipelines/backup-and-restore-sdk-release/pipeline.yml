@@ -770,8 +770,6 @@ jobs:
     params:
       path: backup-and-restore-sdk-release
       status: success
-  - load_var: pr-url
-    file: backup-and-restore-sdk-release/.git/resource/url
   - task: mark-passing-all-tests
     file: cryogenics-tasks/tasks/mark-passing-all-tests/task.yml
     input_mapping:
