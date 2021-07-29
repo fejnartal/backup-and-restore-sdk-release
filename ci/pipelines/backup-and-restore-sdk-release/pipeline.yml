@@ -778,27 +778,6 @@ jobs:
       repository: backup-and-restore-sdk-release
     params:
       GH_TOKEN: ((github.access_token))
-    on_failure:
-      put: slack-cryo-notification
-      params:
-        text: |
-          *BBR-SDK:* A PR failed to be merged automatically (tests passed; probably merging conflicts?). You can review it <((.:pr-url))|*here*>.
-    on_success:
-      put: slack-cryo-notification
-      params:
-        text_file: merge-output/notification
-  - task: deliver-stories
-    file: cryogenics-concourse-tasks/tracker-automation/deliver-stories/task.yml
-    params:
-      TRACKER_API_TOKEN: ((tracker.api_token))
-      TRACKER_PROJECT_ID: ((tracker.project_id))
-      GIT_REPOSITORY: *repo
-  - task: accept-stories
-    file: cryogenics-concourse-tasks/tracker-automation/accept-stories/task.yml
-    params:
-      TRACKER_API_TOKEN: ((tracker.api_token))
-      TRACKER_PROJECT_ID: ((tracker.project_id))
-      GIT_REPOSITORY: *repo
 
 - name: build-rc
   serial: true
