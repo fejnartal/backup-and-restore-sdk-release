@@ -146,13 +146,13 @@ resources:
       credentials: ((gcp/service_accounts/bucket_owner.json_key))
 
 - name: backup-and-restore-sdk-release
-  type: pull-request
+  type: git
   check_every: 1m
   icon: source-pull
   source:
-    repository: &repo cloudfoundry-incubator/backup-and-restore-sdk-release
-    disable_forks: true
-    access_token: ((github.access_token))
+    uri: git@github.com:cloudfoundry-incubator/backup-and-restore-sdk-release.git
+    private_key: ((github.ssh_key))
+    branch: ((branch))
 
 - name: version
   type: semver
