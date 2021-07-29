@@ -276,6 +276,7 @@ update_commit_status: &update_commit_status
 jobs:
 - name: set-pipeline
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -285,6 +286,7 @@ jobs:
 
 - name: unit-tests
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -337,6 +339,7 @@ jobs:
 
 - name: contract-tests
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -376,6 +379,7 @@ jobs:
 
 - name: system-tests-external-dbs-gcp
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -470,6 +474,7 @@ jobs:
 
 - name: system-tests-external-dbs-rds
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -594,6 +599,7 @@ jobs:
 
 - name: system-tests-internal-dbs
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -672,6 +678,7 @@ jobs:
 
 - name: system-tests-blobstore-backuper
   serial: true
+  << : *update_commit_status
   plan:
   - in_parallel:
     - get: backup-and-restore-sdk-release
@@ -756,6 +763,7 @@ jobs:
 
 - name: merge-pr
   serial: true
+  << : *update_commit_status
   plan:
   - get: cryogenics-concourse-tasks
   - get: backup-and-restore-sdk-release
