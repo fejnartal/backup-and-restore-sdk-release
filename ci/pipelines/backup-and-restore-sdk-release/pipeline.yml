@@ -116,11 +116,6 @@ resource_types:
     repository: wfernandes/vault-resource
     tag: latest
 
-- name: pull-request
-  type: docker-image
-  source:
-    repository: teliaoss/github-pr-resource
-
 - name: gitgat
   type: docker-image
   source:
