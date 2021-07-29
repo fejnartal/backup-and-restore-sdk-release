@@ -771,7 +771,7 @@ jobs:
       path: backup-and-restore-sdk-release
       status: success
   - task: mark-passing-all-tests
-    file: cryogenics-tasks/tasks/mark-passing-all-tests/task.yml
+    file: cryogenics-concourse-tasks/mark-passing-all-tests/task.yml
     input_mapping:
       repository: backup-and-restore-sdk-release
     params:
