@@ -299,10 +299,6 @@ jobs:
           TRACKER_API_TOKEN: ((tracker.api_token))
           TRACKER_PROJECT_ID: ((tracker.project_id))
           ESTIMATE: 1
-    - put: backup-and-restore-sdk-release
-      params:
-        path: backup-and-restore-sdk-release
-        status: pending
     - task: sdk-template-unit-tests
       file: backup-and-restore-sdk-release/ci/tasks/sdk-template-unit-tests/task.yml
     - task: databases-unit-tests
@@ -761,10 +757,6 @@ jobs:
     - system-tests-external-dbs-gcp
     - system-tests-external-dbs-rds
     - system-tests-blobstore-backuper
-  - put: backup-and-restore-sdk-release
-    params:
-      path: backup-and-restore-sdk-release
-      status: success
   - task: mark-passing-all-tests
     file: cryogenics-concourse-tasks/mark-passing-all-tests/task.yml
     input_mapping:
