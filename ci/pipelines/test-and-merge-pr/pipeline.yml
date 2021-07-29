@@ -13,13 +13,13 @@ resources:
 - name: current-pr
   type: pr-queue
   source:
-    repository: some-org/some-repo
+    repository: cloudfoundry-incubator/backup-and-restore-sdk-release
     access_token: ((github.access_token))
 
 - name: some-repo
   type: git
   source:
-    uri: git@github.com:some-org/some-repo.git
+    uri: git@github.com:cloudfoundry-incubator/backup-and-restore-sdk-release.git
     private_key: ((github.ssh_key))
 
 - name: cryogenics-tasks
@@ -41,8 +41,8 @@ jobs:
       load_var: pr-info
       file: current-pr/info.json
       on_success:
-        set_pipeline: some-repo-testing-pr
-        file: some-repo/ci/testing/pipeline.yml
+        set_pipeline: backup-and-restore-sdk-release-test-prs
+        file: some-repo/ci/pipelines/backup-and-restore-sdk-release/pipeline.yml
         vars:
           branch: ((.:pr-info.branch))
           # Add any other variables required by your testing pipeline
@@ -67,5 +67,11 @@ jobs:
           PR: ((.:pr-info.number))
           REPO: ((.:pr-info.owner))/((.:pr-info.repository))
           CHECKS:
-            - some-job
-            - some-other-job
+            - set-pipeline
+            - unit-tests
+            - contract-tests
+            - system-tests-external-dbs-gcp
+            - system-tests-external-dbs-rds
+            - system-tests-internal-dbs
+            - system-tests-blobstore-backuper
+            - merge-pr
