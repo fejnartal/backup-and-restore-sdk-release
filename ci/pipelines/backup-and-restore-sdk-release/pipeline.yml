@@ -263,7 +263,6 @@ jobs:
   - in_parallel:
     - get: backup-and-restore-sdk-release
       trigger: true
-      version: every
   - set_pipeline: backup-and-restore-sdk-release
     file: backup-and-restore-sdk-release/ci/pipelines/backup-and-restore-sdk-release/pipeline.yml
 
@@ -273,7 +272,6 @@ jobs:
   - in_parallel:
     - get: backup-and-restore-sdk-release
       trigger: true
-      version: every
       passed: [set-pipeline]
     - get: github-sdk-key
     - get: cryogenics-concourse-tasks
@@ -326,7 +324,6 @@ jobs:
   - in_parallel:
     - get: backup-and-restore-sdk-release
       passed: [unit-tests]
-      version: every
       trigger: true
     - get: six-hours
       trigger: true
@@ -367,7 +364,6 @@ jobs:
     - get: backup-and-restore-sdk-release
       passed: [unit-tests]
       trigger: true
-      version: every
     - get: cryogenics-meta
     - get: gcp-db-certs
     - get: six-hours
@@ -461,7 +457,6 @@ jobs:
   - in_parallel:
     - get: backup-and-restore-sdk-release
       trigger: true
-      version: every
       passed: [unit-tests]
     - get: cryogenics-meta
     - get: cert-store
@@ -586,7 +581,6 @@ jobs:
   - in_parallel:
     - get: backup-and-restore-sdk-release
       trigger: true
-      version: every
       passed: [unit-tests]
     - get: cert-store
       resource: gcp-db-certs
@@ -665,7 +659,6 @@ jobs:
   - in_parallel:
     - get: backup-and-restore-sdk-release
       trigger: true
-      version: every
       passed: [unit-tests]
     - get: six-hours
       trigger: true
@@ -750,7 +743,6 @@ jobs:
   - get: cryogenics-concourse-tasks
   - get: backup-and-restore-sdk-release
     trigger: true
-    version: every
     passed:
     - contract-tests
     - system-tests-internal-dbs
