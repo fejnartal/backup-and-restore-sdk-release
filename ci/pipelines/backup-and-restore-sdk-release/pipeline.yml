@@ -267,6 +267,12 @@ resources:
     repo: cloudfoundry-incubator/backup-and-restore-sdk-release
     access_token: ((github.access_token))
 
+update_commit_status: &update_commit_status
+  on_success: { put: commit-status, params: { path: backup-and-restore-sdk-release, state: success }}
+  on_failure: { put: commit-status, params: { path: backup-and-restore-sdk-release, state: failure }}
+  on_error:   { put: commit-status, params: { path: backup-and-restore-sdk-release, state: failure }}
+  on_abort:   { put: commit-status, params: { path: backup-and-restore-sdk-release, state: failure }}
+
 jobs:
 - name: set-pipeline
   serial: true
