@@ -68,7 +68,6 @@ groups:
   - system-tests-external-dbs-rds
   - system-tests-blobstore-backuper
   - contract-tests
-  - merge-pr
 
 resource_types:
 - name: file-url
