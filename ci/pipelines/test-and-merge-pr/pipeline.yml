@@ -79,4 +79,3 @@ jobs:
           - system-tests-external-dbs-rds
           - system-tests-internal-dbs
           - system-tests-blobstore-backuper
-          - merge-pr

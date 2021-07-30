@@ -685,23 +685,3 @@ jobs:
         GCS_BACKUP_BUCKET_NAME: bbr-system-test-gcs-backup-bucket
         GCS_CLONE_BUCKET_NAME: bbr-system-test-gcs-clone-bucket
         BOSH_DEPLOYMENT: gcs-backuper
-
-- name: merge-pr
-  serial: true
-  << : *update_commit_status
-  plan:
-  - get: cryogenics-concourse-tasks
-  - get: backup-and-restore-sdk-release
-    trigger: true
-    passed:
-    - contract-tests
-    - system-tests-internal-dbs
-    - system-tests-external-dbs-gcp
-    - system-tests-external-dbs-rds
-    - system-tests-blobstore-backuper
-  - task: mark-passing-all-tests
-    file: cryogenics-concourse-tasks/mark-passing-all-tests/task.yml
-    input_mapping:
-      repository: backup-and-restore-sdk-release
-    params:
-      GH_TOKEN: ((github.access_token))
