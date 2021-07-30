@@ -16,7 +16,7 @@ resources:
     repository: cloudfoundry-incubator/backup-and-restore-sdk-release
     access_token: ((github.access_token))
 
-- name: some-repo
+- name: bbr-sdk-repo
   type: git
   source:
     uri: git@github.com:cloudfoundry-incubator/backup-and-restore-sdk-release.git
@@ -31,7 +31,7 @@ resources:
 jobs:
 - name: test-open-pr
   plan:
-  - get: some-repo
+  - get: bbr-sdk-repo
 
   - try:
       do:
@@ -44,14 +44,13 @@ jobs:
         file: current-pr/info.json
 
       - set_pipeline: backup-and-restore-sdk-release-test-prs
-        file: some-repo/ci/pipelines/backup-and-restore-sdk-release/pipeline.yml
+        file: bbr-sdk-repo/ci/pipelines/backup-and-restore-sdk-release/pipeline.yml
         vars:
           branch: ((.:pr-info.branch))
           # Add any other variables required by your testing pipeline
 
 - name: merge-pr
   plan:
-  - get: some-repo
   - get: cryogenics-tasks
   - get: every-5-min
     trigger: true
