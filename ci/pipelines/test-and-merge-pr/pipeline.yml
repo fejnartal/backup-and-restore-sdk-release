@@ -51,6 +51,7 @@ jobs:
   plan:
   - get: some-repo
   - get: current-pr
+  - get: cryogenics-tasks
   - get: every-5-min
     trigger: true
 
