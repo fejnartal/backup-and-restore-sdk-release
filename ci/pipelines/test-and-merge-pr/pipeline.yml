@@ -31,6 +31,12 @@ resources:
     uri: git@github.com:pivotal/cryogenics-concourse-tasks.git
     private_key: ((github.ssh_key))
 
+- name: slack-cryo-notification
+  type: slack-notification
+  icon: bell-ring
+  source:
+    url: ((slack.webhook))
+
 jobs:
 - name: test-open-pr
   plan:
@@ -56,8 +62,8 @@ jobs:
   - load_var: pr-info
     file: current-pr-checks/info.json
 
-  - task: merge-pr
-    file: cryogenics-tasks/tasks/automerge/task.yml
+  - task: all-checks-passing
+    file: cryogenics-tasks/tasks/pr-checks-passing/task.yml
     params:
       GH_TOKEN: ((github.access_token))
       PR: ((.:pr-info.number))
@@ -70,3 +76,40 @@ jobs:
       - system-tests-external-dbs-rds
       - system-tests-internal-dbs
       - system-tests-blobstore-backuper
+
+  - task: merge-pr
+    file: cryogenics-tasks/github-automation/merge-pr/task.yml
+    input_mapping:
+      cryogenics-concourse-tasks: cryogenics-tasks
+    params:
+      DELETE: TRUE
+      AUTHOR: dependabot
+      GH_TOKEN: ((github.access_token))
+      PR_REF: ((.:pr-info.pr-url))
+      PROJECT_NAME: BBR-SDK
+
+    on_failure:
+      put: slack-cryo-notification
+      params:
+        text: |
+          *BBR-SDK:* A PR failed to be merged automatically (tests passed; probably merging conflicts?). You can review it <((.:pr-info.pr-url))|*here*>.
+
+    on_success:
+      put: slack-cryo-notification
+      params:
+        text: |
+          *BBR-SDK:* A PR was merged automatically. You can review it <((.:pr-info.pr-url))|*here*>.
+
+  - task: deliver-stories
+    file: cryogenics-tasks/tracker-automation/deliver-stories/task.yml
+    params:
+      TRACKER_API_TOKEN: ((tracker.api_token))
+      TRACKER_PROJECT_ID: ((tracker.project_id))
+      GIT_REPOSITORY: ((.:pr-info.owner))/((.:pr-info.repository))
+
+  - task: accept-stories
+    file: cryogenics-tasks/tracker-automation/accept-stories/task.yml
+    params:
+      TRACKER_API_TOKEN: ((tracker.api_token))
+      TRACKER_PROJECT_ID: ((tracker.project_id))
+      GIT_REPOSITORY: ((.:pr-info.owner))/((.:pr-info.repository))
