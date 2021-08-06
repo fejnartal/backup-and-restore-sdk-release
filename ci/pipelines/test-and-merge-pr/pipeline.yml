@@ -6,15 +6,18 @@ resource_types:
     repository: cryogenics/pr-queue-resource
 
 resources:
-- name: every-5-min
-  type: time
-  source: {interval: 5m}
-
 - name: current-pr
   type: pr-queue
   source:
     repository: cloudfoundry-incubator/backup-and-restore-sdk-release
     access_token: ((github.access_token))
+
+- name: current-pr-checks
+  type: pr-queue
+  source:
+    repository: cloudfoundry-incubator/backup-and-restore-sdk-release
+    access_token: ((github.access_token))
+    track_checks: true
 
 - name: bbr-sdk-repo
   type: git
@@ -32,49 +35,38 @@ jobs:
 - name: test-open-pr
   plan:
   - get: bbr-sdk-repo
+  - get: current-pr
+    trigger: true
 
-  - try:
-      do:
-      # When the last open PR is closed/merged, a new "empty" version is generated
-      # To handle this try to get current-pr. Only if it succeeds, continue exec.
-      - get: current-pr
-        trigger: true
+  - load_var: pr-info
+    file: current-pr/info.json
 
-      - load_var: pr-info
-        file: current-pr/info.json
-
-      - set_pipeline: backup-and-restore-sdk-release-test-prs
-        file: bbr-sdk-repo/ci/pipelines/backup-and-restore-sdk-release/pipeline.yml
-        vars:
-          branch: ((.:pr-info.branch))
-          # Add any other variables required by your testing pipeline
+  - set_pipeline: backup-and-restore-sdk-release-test-prs
+    file: bbr-sdk-repo/ci/pipelines/backup-and-restore-sdk-release/pipeline.yml
+    vars:
+      branch: ((.:pr-info.branch))
+      # Add any other variables required by your testing pipeline
 
 - name: merge-pr
   plan:
   - get: cryogenics-tasks
-  - get: every-5-min
+  - get: current-pr-checks
     trigger: true
 
-  - try:
-      do:
-      # When the last open PR is closed/merged, a new "empty" version is generated
-      # To handle this try to get current-pr. Only if it succeeds, continue exec.
-      - get: current-pr
+  - load_var: pr-info
+    file: current-pr-checks/info.json
 
-      - load_var: pr-info
-        file: current-pr/info.json
-
-      - task: merge-pr
-        file: cryogenics-tasks/tasks/automerge/task.yml
-        params:
-          GH_TOKEN: ((github.access_token))
-          PR: ((.:pr-info.number))
-          REPO: ((.:pr-info.owner))/((.:pr-info.repository))
-          CHECKS:
-          - set-pipeline
-          - unit-tests
-          - contract-tests
-          - system-tests-external-dbs-gcp
-          - system-tests-external-dbs-rds
-          - system-tests-internal-dbs
-          - system-tests-blobstore-backuper
+  - task: merge-pr
+    file: cryogenics-tasks/tasks/automerge/task.yml
+    params:
+      GH_TOKEN: ((github.access_token))
+      PR: ((.:pr-info.number))
+      REPO: ((.:pr-info.owner))/((.:pr-info.repository))
+      CHECKS:
+      - set-pipeline
+      - unit-tests
+      - contract-tests
+      - system-tests-external-dbs-gcp
+      - system-tests-external-dbs-rds
+      - system-tests-internal-dbs
+      - system-tests-blobstore-backuper
