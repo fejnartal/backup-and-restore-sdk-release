@@ -76,6 +76,8 @@ jobs:
       - system-tests-external-dbs-rds
       - system-tests-internal-dbs
       - system-tests-blobstore-backuper
+      - EasyCLA
+      - security/snyk (mrdavidlaing)
 
   - task: merge-pr
     file: cryogenics-tasks/github-automation/merge-pr/task.yml
