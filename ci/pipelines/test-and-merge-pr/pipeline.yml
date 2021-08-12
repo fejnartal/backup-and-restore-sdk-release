@@ -14,6 +14,7 @@ resources:
 
 - name: current-pr-checks
   type: pr-queue
+  check_every: 20m
   source:
     repository: cloudfoundry-incubator/backup-and-restore-sdk-release
     access_token: ((github.access_token))
