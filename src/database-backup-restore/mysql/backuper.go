@@ -26,6 +26,7 @@ func (b Backuper) Action(artifactFilePath string) error {
 		"-v",
 		"--skip-add-locks",
 		"--single-transaction",
+		"--set-gtid-purged=OFF",
 		"--result-file=" + artifactFilePath,
 		b.config.Database,
 	}
